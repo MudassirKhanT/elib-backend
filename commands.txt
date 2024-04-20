@@ -1,0 +1,17 @@
+npm init = creates project for us(package.json)
+npm install -D (Dev dependencies)
+npm install -D typescript nodemon ts-node @types/node
+npm install typescript 
+npm install nodemon(for auto restart)
+npm install ts-node (to see output and compiling  typescript)
+npm install @types/node (to see information of inbuilt nodes of typescript)
+//set up typescript
+npx tsc --init (typescript compiler)
+//Git configuration
+git init (Empty git repositary will be created)
+//Ignore some folders in git repository
+create a file .gitignore
+//install gitignore extension
+git init
+//Add dev scripts in json file
+"dev":"nodemon server.ts"
