@@ -17,3 +17,7 @@ git init
 "dev":"nodemon server.ts"
 //ESLINT setup used to fix and find problems of JavaScript
 npm init @eslint/config
+//Set up text formatting
+install prettier extension
+//server setup
+install experss npm i express
