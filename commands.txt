@@ -15,3 +15,5 @@ create a file .gitignore
 git init
 //Add dev scripts in json file
 "dev":"nodemon server.ts"
+//ESLINT setup used to fix and find problems of JavaScript
+npm init @eslint/config
