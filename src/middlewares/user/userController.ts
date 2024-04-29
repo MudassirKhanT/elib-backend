@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import { sign } from "jsonwebtoken";
 import { config } from "../../config/config";
 import { User } from "./userTypes";
+import { access } from "fs";
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
   const { name, email, password } = req.body;
   //validation
@@ -44,9 +45,43 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     });
 
     //Response
+    res.status(201).json({ accessToken: token });
+  } catch (err) {
+    return next(createHttpError(500, "Error while signing the token"));
+  }
+};
+
+const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return next(createHttpError(400, "All fields are required"));
+  }
+  let user;
+  try {
+    user = await userModel.findOne({ email });
+    if (!user) {
+      return next(createHttpError(400, "User not found"));
+    }
+  } catch (err) {
+    return next(createHttpError(500, "Error while getting user"));
+  }
+
+  //match email and password
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return next(createHttpError(400, "UserName or Password Incorrect"));
+  }
+
+  // create access token
+
+  try {
+    const token = sign({ sub: user._id }, config.jwtSecret as string, {
+      expiresIn: "7d",
+    });
+    //response
     res.json({ accessToken: token });
   } catch (err) {
     return next(createHttpError(500, "Error while signing the token"));
   }
 };
-export { createUser };
+export { createUser, loginUser };
