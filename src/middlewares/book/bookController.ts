@@ -63,7 +63,6 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     res.status(201).json({ id: newBook._id });
-    res.json({});
   } catch (err) {
     console.log("an error occurred", err);
     return next(createHttpError(500, "Error while uploading the files"));
