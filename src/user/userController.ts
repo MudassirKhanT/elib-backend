@@ -3,7 +3,7 @@ import createHttpError from "http-errors";
 import userModel from "./userModel";
 import bcrypt from "bcrypt";
 import { sign } from "jsonwebtoken";
-import { config } from "../../config/config";
+import { config } from "../config/config";
 import { User } from "./userTypes";
 import { access } from "fs";
 const createUser = async (req: Request, res: Response, next: NextFunction) => {

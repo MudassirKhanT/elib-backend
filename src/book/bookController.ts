@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import cloudinary from "../../config/cloudinary";
+import cloudinary from "../config/cloudinary";
 import path from "path";
 import fs from "node:fs";
 import createHttpError from "http-errors";
