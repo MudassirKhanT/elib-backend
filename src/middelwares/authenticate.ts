@@ -6,6 +6,7 @@ import { config } from "../config/config";
 export interface AuthRequest extends Request {
   userId: string;
 }
+//typeCast
 const authenticate = (req: Request, res: Response, next: NextFunction) => {
   const token = req.header("Authorization");
   if (!token) {
