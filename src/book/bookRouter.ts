@@ -3,6 +3,7 @@ import {
   createBook,
   updateBook,
   listBooks,
+  deleteBook,
   getSingleBook,
 } from "./bookController";
 import multer from "multer";
@@ -39,6 +40,9 @@ bookRouter.patch(
 );
 
 bookRouter.get("/", listBooks);
+bookRouter.get("/:bookId", getSingleBook);
+
 // bookRouter.get("/:bookId", getSingleBook);
+bookRouter.delete("/:bookId", authenticate, deleteBook);
 
 export default bookRouter;

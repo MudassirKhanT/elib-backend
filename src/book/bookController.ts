@@ -147,31 +147,73 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const listBooks = async (req: Request, res: Response, next: NextFunction) => {
+  console.log("hello");
   try {
+    console.log("hii");
     //Add pagination
-    const book = await bookModel.find();
+    const book = await bookModel.find().populate("author", "name");
+    console.log("books:", book);
     res.json(book);
   } catch (err) {
     return next(createHttpError(500, "Error while getting a book"));
   }
 };
 
-// const getSingleBook = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   const bookId = req.params.bookId;
-//   console.log("BookId:", bookId);
-//   try {
-//     const book = await bookModel.findById({ _id: bookId });
-//     if (!book) {
-//       return next(createHttpError(404, "Book not found.."));
-//     }
-//     return res.json(book);
-//   } catch (err) {
-//     return next(createHttpError(500, "Error while getting a book"));
-//   }
-// };
+const getSingleBook = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  console.log("Hello");
+  const bookId = req.params.bookId;
+  console.log("bookId:", bookId);
+  try {
+    const book = await bookModel
+      .findById({ _id: bookId })
+      // populate author field
+      .populate("author", "name");
+    if (!book) {
+      return next(createHttpError(404, "Book not found."));
+    }
 
-export { createBook, updateBook, listBooks, getSingleBook };
+    return res.json(book);
+  } catch (err) {
+    return next(createHttpError(500, "Error while getting a book"));
+  }
+};
+
+const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
+  const bookId = req.params.bookId;
+
+  const book = await bookModel.findOne({ _id: bookId });
+  if (!book) {
+    return next(createHttpError(404, "Book not found"));
+  }
+
+  // Check Access
+  const _req = req as AuthRequest;
+  if (book.author.toString() !== _req.userId) {
+    return next(createHttpError(403, "You can not update others book."));
+  }
+  // book-covers/dkzujeho0txi0yrfqjsm
+  // https://res.cloudinary.com/degzfrkse/image/upload/v1712590372/book-covers/u4bt9x7sv0r0cg5cuynm.png
+
+  const coverFileSplits = book.coverImage.split("/");
+  const coverImagePublicId =
+    coverFileSplits.at(-2) + "/" + coverFileSplits.at(-1)?.split(".").at(-2);
+
+  const bookFileSplits = book.file.split("/");
+  const bookFilePublicId = bookFileSplits.at(-2) + "/" + bookFileSplits.at(-1);
+  console.log("bookFilePublicId", bookFilePublicId);
+  // todo: add try error block
+  await cloudinary.uploader.destroy(coverImagePublicId);
+  await cloudinary.uploader.destroy(bookFilePublicId, {
+    resource_type: "raw",
+  });
+
+  await bookModel.deleteOne({ _id: bookId });
+
+  return res.sendStatus(204);
+};
+
+export { createBook, updateBook, listBooks, getSingleBook, deleteBook };
